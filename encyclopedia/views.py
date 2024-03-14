@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render, redirect
 from django import forms
 
@@ -79,3 +81,8 @@ def search(request):
                 "entries": substring_list,
                 "title": title
             })
+        
+def random_entry(request):
+    entries = util.list_entries()
+    random_title = random.choice(entries)
+    return redirect('entries', title=random_title)

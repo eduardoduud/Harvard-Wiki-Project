@@ -13,8 +13,14 @@ h1 {
 }
 
 textarea {
-    height: 90vh;
-    width: 80%;
+    height: 70vh;
+    width: 70%;
+    margin-bottom: 10px;
+}
+
+.errormsg {
+    color: red;
+    font-weight: bold;
 }
 
 .main {
@@ -35,4 +41,14 @@ textarea {
 
 .sidebar h2 {
     margin-top: 5px;
+}
+
+.newpage {
+    display: flex;
+    flex-direction: column;
+}
+
+.newpage input {
+    width: 70%;
+    margin-bottom: 10px;
 }

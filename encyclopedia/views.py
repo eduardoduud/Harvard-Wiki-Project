@@ -1,7 +1,13 @@
 from django.shortcuts import render, redirect
+from django import forms
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from . import util
 
+class NewEntryForm(forms.Form):
+    entry = forms.CharField(widget= forms.TextInput(attrs={'placeholder':'Title'}), label="")
+    content = forms.CharField(widget= forms.Textarea(attrs={'placeholder':'Write your article'}), label="")
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -12,6 +18,27 @@ def entries(request, title):
     return render(request, "encyclopedia/entry.html", {
         "entry": util.get_entry(title),
         "title": title
+    })
+
+def new_entry(request):
+    form = NewEntryForm(request.POST)
+    if form.is_valid():
+        title = form.cleaned_data["entry"]
+        content = form.cleaned_data["content"]
+        entries = util.list_entries()
+        if title in entries:
+            error_message = "An entry with this title already exists."
+            return render(request, "encyclopedia/new_entry.html", {
+                "form": form,
+                "error_message": error_message
+            })
+        else:
+            util.save_entry(title, content)
+            return redirect('entries', title=title)
+    else:
+        form = NewEntryForm()
+        return render(request, "encyclopedia/new_entry.html", {
+            "form": form        
     })
 
 def search(request):

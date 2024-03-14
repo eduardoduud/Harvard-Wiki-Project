@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django import forms
-from django.urls import reverse
-from django.http import HttpResponseRedirect
+
+from html2markdown import convert
 
 from . import util
 
@@ -40,6 +40,28 @@ def new_entry(request):
         return render(request, "encyclopedia/new_entry.html", {
             "form": form        
     })
+
+def edit_entry(request, title):
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if form.is_valid():
+            new_content = form.cleaned_data["content"]
+            old_title = title
+            new_title = form.cleaned_data["entry"]
+            util.save_and_rename(old_title, new_title, new_content)
+            return redirect('entries', title=new_title)
+    else:
+        entry_content = util.get_entry(title)
+        if entry_content is not None:
+            markdown_content = convert(entry_content)
+            form = NewEntryForm(initial={'entry': title, 'content': markdown_content})
+            return render(request, "encyclopedia/edit_entry.html", {
+                "form": form,
+                "title": title
+            })
+        else:
+            return render(request, "encyclopedia/notfound.html", {
+            })
 
 def search(request):
     if request.method == "GET":
